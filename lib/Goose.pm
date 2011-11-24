@@ -62,7 +62,7 @@ Changing a class method, by example
 
 =cut
 
-$Goose::VERSION = '0.001';
+$Goose::VERSION = '0.002';
 $Goose::Subs = {};
 $Goose::Imports = [];
 $Goose::Classes = [];
@@ -442,7 +442,7 @@ sub exports {
                 warn "Can't export $name into $c\:: because class $c does not exist";
                 next;
             } 
-            *{$c . '::' . $name} = \&{$code};
+            *{"$c\::$name"} = \*{"$class\::$name"};
         }
     }
     return;

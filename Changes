@@ -1,5 +1,9 @@
 Revision history for Goose
 
-0.001    23/Nov/2011
+0.002   24/Nov/2011
+        Very minor change, but important if you use exports. The exported subroutine was coming from Goose.pm instead of your current module.
+        This has now been fixed. 
+
+0.001   23/Nov/2011
         First version, released on an unsuspecting world.
 
