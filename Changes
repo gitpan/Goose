@@ -1,5 +1,10 @@
 Revision history for Goose
 
+0.003   29/Nov/2011
+        Added import feature :Antlers. Use this to export the 'has' method. Currently only supports 'is' and 'default'.
+            use Goose qw/:Antlers/;
+            has => x ( is => 'ro', default => 7 );
+
 0.002   24/Nov/2011
         Very minor change, but important if you use exports. The exported subroutine was coming from Goose.pm instead of your current module.
         This has now been fixed. 

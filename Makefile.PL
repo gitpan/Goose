@@ -5,7 +5,7 @@ all_from 'lib/Goose.pm';
 author   q{Brad Haywood <brad@geeksware.net>};
 license  'perl';
 
-build_requires 'Test::More';
+build_requires 'Test::Lite';
 
 auto_install;
 

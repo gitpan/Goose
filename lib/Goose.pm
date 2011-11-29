@@ -62,7 +62,7 @@ Changing a class method, by example
 
 =cut
 
-$Goose::VERSION = '0.002';
+$Goose::VERSION = '0.003';
 $Goose::Subs = {};
 $Goose::Imports = [];
 $Goose::Classes = [];
@@ -73,6 +73,7 @@ sub import {
     my $pkg = caller;
     
     my $moosed;
+    my $wantmoose;
     if (@args > 0) {
         for (@args) {
             feature::feature->import( ':5.10' )
@@ -84,12 +85,16 @@ sub import {
             _setup_class($pkg)
                 if $_ eq ':Class';
             
+            $wantmoose = 1
+                if $_ eq ':UseMoose';
+
             $moosed = 1
-                if $_ eq ':Moose';
+                if $_ eq ':Antlers';
+            
         }
     }
 
-    if ($moosed) {
+    if ($wantmoose) {
         _import_def(
             $pkg,
             qw/
@@ -119,6 +124,14 @@ sub import {
                 drop_sub
             /,
         );
+        if ($moosed) {
+            _import_def(
+                $pkg,
+                qw/ 
+                    has
+                /,
+            );
+        }
     }
 }
 
@@ -468,6 +481,44 @@ sub have {
         }
     }
 }
+
+sub has {
+    my ($name, %args) = @_;
+    my $pkg = getscope();
+    my $rtype;
+    my $default;
+    foreach my $key (keys %args) {
+        $rtype = $args{is}
+            if $key eq 'is';
+        $default = $args{default}
+            if $key eq 'default';
+    }
+    if ($rtype eq 'ro') {
+        if (! $default) {
+            warn "Redundant null static accessor '$name'";
+        }
+        *{$pkg . "::$name"} = sub {
+            my ($class, $val) = @_;
+            if ($val) {
+                warn "Cannot alter a Read-Only accessor";
+                return ;
+            }
+            return $default||0;
+        };
+    }
+    else {
+        *{$pkg . "::$name"} = sub {
+            my ($class, $val) = @_;
+            if ($val) {
+                *{$pkg . "::$name"} = sub { return $val; }; return $val;
+            }
+            else {
+                return $default||0;
+            }
+        };
+    }
+}
+        
 
 sub accessor {
     my ($name, $value) = @_;
@@ -886,8 +937,20 @@ If you don't want to bless the entire C<$self>, use C<bless>.
         };
     }
 
-Out of all that we get 'Hello, World'. It may seem pointless, but I like a clean presentation plus keeping track of where methods point to, and I find using C<chainable> helps me with this.
+=head2 has
 
+Create a more advanced accessor similar to Moose (but not as cool). It currently supports C<is> and C<default>. Don't forget to import C<:Antlers>
+
+    package Foo;
+
+    use Goose qw/:Antlers/;
+
+    has name => ( is => 'rw' );
+    has x => ( is => 'ro', default => 7 );
+    print __PACKAGE__->x; # 7
+    __PACKAGE__->x(5); # BAD! It's Read-Only!!
+    __PACKAGE__->name('World'); # set and return 'World'
+    
 =head1 AUTHOR
 
 Brad Haywood <brad@geeksware.net>
