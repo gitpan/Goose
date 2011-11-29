@@ -62,7 +62,7 @@ Changing a class method, by example
 
 =cut
 
-$Goose::VERSION = '0.003';
+$Goose::VERSION = '0.004';
 $Goose::Subs = {};
 $Goose::Imports = [];
 $Goose::Classes = [];
@@ -104,6 +104,7 @@ sub import {
                 exports
                 have
                 drop_sub
+                sub_run
             /,
         );
     }
@@ -122,6 +123,7 @@ sub import {
                 have
                 around
                 drop_sub
+                sub_run
             /,
         );
         if ($moosed) {
@@ -153,7 +155,7 @@ sub extends {
     my $pkg = getscope();
 
     if ($pkg eq 'main') {
-        warn "Cannot augment main";
+        warn "Cannot extend main";
         return ;
     }
 
@@ -557,6 +559,16 @@ sub chainable {
     });
 } 
 
+sub sub_run {
+    my ($class,$subs, $methods) = @_;
+    
+    my $name;
+    my $orig;
+    for my $sub (@$subs) {
+        *{"$class\::$sub"}->($class, @$methods);
+    }
+}
+
 sub _debug_on {
     $Goose::Debug = 1;
     _debug("Goose debugging ON");
@@ -619,7 +631,7 @@ Now with importing we can turn a perfectly normal package into a class, sort of.
     say $foo->getName;
 
 Above we created a basically blank package, passed :Class to the Goose import method, then controlled the entire class from C<test.pl>.
-As of 0.007, C<:Class> now offers B<augmentation> using C<augment> which inherits a specified class, similar to C<use base>
+As of 0.007, C<:Class> now offers B<extending> using C<extends> which inherits a specified class, similar to C<use base>
 
 =head1 METHODS 
 
@@ -951,6 +963,35 @@ Create a more advanced accessor similar to Moose (but not as cool). It currently
     __PACKAGE__->x(5); # BAD! It's Read-Only!!
     __PACKAGE__->name('World'); # set and return 'World'
     
+=head2 sub_run
+
+Runs multiple subroutines in a class, with arguments if necessary. This function takes two arrayrefs, the first being the subroutines you want to run, and the last is 
+the arguments to pass to each subroutine.
+
+    # MyApp.pm
+    package MyApp;
+    use Goose;
+
+    sub greet {
+        my ($self, $name) = @_;
+        print "Hello, $name!\n";
+    }
+
+    sub bye {
+        my ($self, $name, $where) = @_;
+        print "Bye, $name. I'm going $where\n";
+    }
+
+    # run.pl
+    use MyApp;
+    MyApp->sub_run(
+        [qw/greet bye/],
+        [qw/World home/]
+    );
+
+    # Hello, World!
+    # Bye, World. I'm going home
+
 =head1 AUTHOR
 
 Brad Haywood <brad@geeksware.net>

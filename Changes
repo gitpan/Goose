@@ -1,5 +1,8 @@
 Revision history for Goose
 
+0.004   29/Nov/2011
+        $Class->sub_run can now run multiple subroutines with arguments. Please see documentation for more information.
+
 0.003   29/Nov/2011
         Added import feature :Antlers. Use this to export the 'has' method. Currently only supports 'is' and 'default'.
             use Goose qw/:Antlers/;
