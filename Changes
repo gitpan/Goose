@@ -1,5 +1,9 @@
 Revision history for Goose
 
+0.006   30/Nov/2011
+        Started new module within Goose called Goose::Utils. Its methods can be accessed by importing ':Utils' within Goose.
+        Usage information can be found in the Goose documentation.
+
 0.005   30/Nov/2011
         A few people decided :Class was becoming redundant with the new :Antlers import (myself included). Because of this, :Class has been replaced by :Antlers and 
         'accessor' will be replaced by 'has'. This means less typing, because if you're using :Class there's a good chance you may want 'has', too. But to use them both 

@@ -62,7 +62,7 @@ Changing a class method, by example
 
 =cut
 
-$Goose::VERSION = '0.005';
+$Goose::VERSION = '0.006';
 $Goose::Subs = {};
 $Goose::Imports = [];
 $Goose::Classes = [];
@@ -90,6 +90,8 @@ sub import {
 
             $moosed = 1
                 if $_ eq ':Antlers';
+            _setup_utils($pkg)
+                if $_ eq ':Utils';
             
         }
     }
@@ -97,6 +99,7 @@ sub import {
     if ($wantmoose) {
         _import_def(
             $pkg,
+            undef,
             qw/
                 create
                 sub_alert
@@ -111,6 +114,7 @@ sub import {
     else {
         _import_def(
             $pkg,
+            undef,
             qw/
                 override
                 restore
@@ -129,6 +133,7 @@ sub import {
         if ($moosed) {
             _import_def(
                 $pkg,
+                undef,
                 qw/ 
                     has
                 /,
@@ -183,19 +188,31 @@ sub _extend_class {
     }
 }
 
+sub _setup_utils {
+    my $class = shift;
+    extends 'Goose::Utils';
+    _import_def ($class, 'Goose::Utils', qw/ref_has is_number count/);
+}
+
 sub _setup_moosed {
     my $class = shift;
 
     *{ "$class\::new" } = sub { return bless { }, $class };
-    _import_def ($class, qw/extends accessor has chainable/);
+    _import_def ($class, undef, qw/extends accessor has chainable/);
 }
 
 sub _import_def {
-    my ($pkg, @subs) = @_;
-
-    for (@subs) {
-        *{$pkg . "::$_"} = \&$_;
-        push @{$Goose::Imports}, $_;
+    my ($pkg, $from, @subs) = @_;
+    if ($from) {
+        for (@subs) {
+            *{$pkg . "::$_"} = \&{"$from\::$_"};
+        }
+    }
+    else { 
+        for (@subs) {
+            *{$pkg . "::$_"} = \&$_;
+            push @{$Goose::Imports}, $_;
+        }
     }
 }
 
@@ -604,6 +621,33 @@ or create hook modifiers then this will enable it for you. It can get verbose, s
     use Goose qw/:5.010 :Debug/;
 
     create 'this_sub' => sub { }; # notifies you with [debug] that a subroutine was createed
+
+The newest addition to Goose is C<Goose::Utils>. It contains features that make doing simple things in Perl, more simple. Like counting the number of elements in a HashRef or ArrayRef, 
+returning the type of a number or if it is even a number, and searching a reference for a particular key (Works for arrayref and hashref).
+To use these utilities just import C<:Utils>.
+
+    use Goose ':Utils';
+    
+    my $h = {
+        name => 'foo',
+        baz  => { foo => 'bar' },
+        test => 'za',
+    };
+    
+    print count($h); # returns 4
+
+    my $a = [1,2,3,4,'a'];
+    print count($a); # returns 5
+
+    if (ref_has($h, 'baz')) {} # true
+
+    is_number(8); # Integer
+    is_number("7"); # Integer
+    is_number(5.2); # Float
+    is_number("  1.0 "); # Float
+    is_number('a'); # 0 
+
+say count($h); 
 
 Now with importing we can turn a perfectly normal package into a class, sort of. It saves you from creating C<sub new { ... }>
 
