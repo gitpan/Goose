@@ -62,7 +62,7 @@ Changing a class method, by example
 
 =cut
 
-$Goose::VERSION = '0.004';
+$Goose::VERSION = '0.005';
 $Goose::Subs = {};
 $Goose::Imports = [];
 $Goose::Classes = [];
@@ -82,8 +82,8 @@ sub import {
             _debug_on()
                 if $_ eq ':Debug';
             
-            _setup_class($pkg)
-                if $_ eq ':Class';
+            _setup_moosed($pkg)
+                if $_ eq ':Class' or $_ eq ':Antlers';
             
             $wantmoose = 1
                 if $_ eq ':UseMoose';
@@ -183,11 +183,11 @@ sub _extend_class {
     }
 }
 
-sub _setup_class {
+sub _setup_moosed {
     my $class = shift;
 
     *{ "$class\::new" } = sub { return bless { }, $class };
-    _import_def ($class, qw/extends accessor chainable/);
+    _import_def ($class, qw/extends accessor has chainable/);
 }
 
 sub _import_def {

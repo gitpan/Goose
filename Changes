@@ -1,5 +1,10 @@
 Revision history for Goose
 
+0.005   30/Nov/2011
+        A few people decided :Class was becoming redundant with the new :Antlers import (myself included). Because of this, :Class has been replaced by :Antlers and 
+        'accessor' will be replaced by 'has'. This means less typing, because if you're using :Class there's a good chance you may want 'has', too. But to use them both 
+        you'd need to use qw/:Class :Antlers/, now you can just ':Antlers'. Wee!
+
 0.004   29/Nov/2011
         $Class->sub_run can now run multiple subroutines with arguments. Please see documentation for more information.
 
