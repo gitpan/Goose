@@ -62,7 +62,7 @@ Changing a class method, by example
 
 =cut
 
-$Goose::VERSION = '0.007';
+$Goose::VERSION = '0.008';
 $Goose::Subs = {};
 $Goose::Imports = [];
 $Goose::Classes = [];

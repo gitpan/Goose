@@ -5,7 +5,7 @@ author:
   - 'Brad Haywood <brad@geeksware.net>'
 build_requires:
   ExtUtils::MakeMaker: 6.36
-  Test::Lite: 0.007
+  Test::More: 0
 configure_requires:
   ExtUtils::MakeMaker: 6.36
 distribution_type: module
@@ -22,4 +22,4 @@ no_index:
     - t
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.007
+version: 0.008

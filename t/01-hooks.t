@@ -1,10 +1,8 @@
 #!perl
 package TestModifiers;
 
-use Test::Lite ':strict';
+use Test::More;
 plan tests => 4;
-
-$Test::Lite::DieOnSyntaxError = 1;
 
 my $CLASS = __PACKAGE__;
 
@@ -24,11 +22,11 @@ subtest 'Test Override' => sub {
         "Town";
     });
 
-    is test(), "Town", { type => 'Str' }, 'Override succeeded';
+    is test(), "Town", 'Override succeeded';
 };
 
 subtest 'Test Restore' => sub {
     $CLASS->restore( 'test' );
     
-    is test(), "World", { type => 'Str' }, 'Restore succeeded';
+    is test(), "World", 'Restore succeeded';
 };

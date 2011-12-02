@@ -1,5 +1,8 @@
 Revision history for Goose
 
+0.008   02/Dec/2011
+        Sorry. Massive problems with testing...
+
 0.007   02/Dec/2011
         Small change to the Makefile.PL to use the newest version of Test::Lite. These was a problem with the previous version.
 

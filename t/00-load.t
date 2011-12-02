@@ -1,6 +1,6 @@
 #!perl -T
 
-use Test::Lite ':strict';
+use Test::More;
 
 plan tests => 1;
 
