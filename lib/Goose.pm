@@ -62,7 +62,7 @@ Changing a class method, by example
 
 =cut
 
-$Goose::VERSION = '0.006';
+$Goose::VERSION = '0.007';
 $Goose::Subs = {};
 $Goose::Imports = [];
 $Goose::Classes = [];
@@ -602,7 +602,7 @@ sub _class_exists {
     # i hard a hard time finding out how to go about this
     # this is all i could think of
     # every class should at _least_ have BEGIN, so count the keys!
-    my $class = "$class\::";
+    $class = "$class\::";
     return scalar(keys(%{$class}));
 }
 
@@ -646,8 +646,6 @@ To use these utilities just import C<:Utils>.
     is_number(5.2); # Float
     is_number("  1.0 "); # Float
     is_number('a'); # 0 
-
-say count($h); 
 
 Now with importing we can turn a perfectly normal package into a class, sort of. It saves you from creating C<sub new { ... }>
 

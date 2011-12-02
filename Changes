@@ -1,5 +1,8 @@
 Revision history for Goose
 
+0.007   02/Dec/2011
+        Small change to the Makefile.PL to use the newest version of Test::Lite. These was a problem with the previous version.
+
 0.006   30/Nov/2011
         Started new module within Goose called Goose::Utils. Its methods can be accessed by importing ':Utils' within Goose.
         Usage information can be found in the Goose documentation.

@@ -1,6 +1,6 @@
 package Goose::Utils;
 
-$Goose::Utils::VERSION = '0.001';
+$Goose::Utils::VERSION = '0.002';
 
 my $CLASS = __PACKAGE__;
 
@@ -59,18 +59,18 @@ sub is_number {
 }   
 
 sub count {
-    my ($v) = @_;
-    if (! ref($v)) {
+    my ($refvar) = @_;
+    if (! ref($refvar)) {
         warn "count(): Expecting a reference";
         return 0;
     }
     else {
-        if (ref($v) eq 'ARRAY') {
-            my $num = scalar @$v;
+        if (ref($refvar) eq 'ARRAY') {
+            my $num = scalar @$refvar;
             return $num;
         }
-        elsif (ref($v) eq 'HASH') {
-            my $keys = $CLASS->deep_keys($v, sub { });
+        elsif (ref($refvar) eq 'HASH') {
+            my $keys = $CLASS->deep_keys($refvar, sub { });
             return $keys;
         }
     }
