@@ -1,5 +1,8 @@
 Revision history for Goose
 
+0.009   06/Dec/2011
+        Testing is fixed. Huzzah! Added Try::Tiny to Makefile.PL as Goose can now import 'try' and 'catch' with the import attribute ':Try'.
+
 0.008   02/Dec/2011
         Sorry. Massive problems with testing...
 

@@ -2,15 +2,15 @@ package Goose;
 
 =head1 NAME
 
-Goose - Bend subroutines to your will, or easily create classes.
+Goose - Multi-Use utility for manipulating subroutines, classes and more.
 
 =head1 DESCRIPTION
 
-L<Goose> is basically just a fork of L<Sub::Mage>. I created Sub::Mage in a moment of insanity, and, unfortunately the method names and pod reflects that, plus it was not managed well. 
 What this module attempts to do is make a developers life easier by allowing them to manage and manipulate subroutines and modules. You can override a subroutine, then 
 restore it as it was originally, create after, before and around hook modifiers, delete subroutines, or even tag every subroutine in a class to let you know when each one 
 is being run, which is great for debugging.
-On top of all this Goose offers some minor OOP framework utilities like C<extends>, C<accessor> and C<chainable>. Of course if you need more I would advise L<Moose> or L<Mouse>.
+On top of all this Goose offers some minor OOP framework utilities like C<extends>, C<exports>, C<accessor>, C<has> and C<chainable>. Of course if you need more I would advise L<Moose> or L<Mouse>.
+Newer versions of Goose include C<Goose::Utils> which offers some basic, yet extremely handy functions for common situations, and access to L<Try::Tiny> just by a small import attribute, C<:Try>.
 
 =head1 SYNOPSIS
 
@@ -62,7 +62,7 @@ Changing a class method, by example
 
 =cut
 
-$Goose::VERSION = '0.008';
+$Goose::VERSION = '0.009';
 $Goose::Subs = {};
 $Goose::Imports = [];
 $Goose::Classes = [];
@@ -92,6 +92,8 @@ sub import {
                 if $_ eq ':Antlers';
             _setup_utils($pkg)
                 if $_ eq ':Utils';
+            _add_try($pkg)
+                if $_ eq ':Try';
             
         }
     }
@@ -140,6 +142,13 @@ sub import {
             );
         }
     }
+}
+
+sub _add_try {
+    my $pkg = shift;
+    use Try::Tiny;
+    *{"$pkg\::try"} = \&{"Try::Tiny::try"};
+    *{"$pkg\::catch"} = \&{"Try::Tiny::catch"};
 }
 
 sub drop_sub {
@@ -646,6 +655,17 @@ To use these utilities just import C<:Utils>.
     is_number(5.2); # Float
     is_number("  1.0 "); # Float
     is_number('a'); # 0 
+
+You can use L<Try::Tiny> within Goose for try/catching. Just import C<:Try> and you've got access to C<try> and C<catch>.
+
+    use Goose ':Try';
+    
+    try {
+        die "Oh gnoes";
+    }
+    catch {
+        say "Last error: $_";
+    };
 
 Now with importing we can turn a perfectly normal package into a class, sort of. It saves you from creating C<sub new { ... }>
 

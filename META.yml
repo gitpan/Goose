@@ -1,5 +1,5 @@
 ---
-abstract: 'Bend subroutines to your will, or easily create classes.'
+abstract: 'Multi-Use utility for manipulating subroutines, classes and more.'
 author:
   - 'Brad Haywood <brad@geeksware.net>'
   - 'Brad Haywood <brad@geeksware.net>'
@@ -20,6 +20,8 @@ no_index:
   directory:
     - inc
     - t
+requires:
+  Try::Tiny: 0
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.008
+version: 0.009
