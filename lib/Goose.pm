@@ -62,7 +62,7 @@ Changing a class method, by example
 
 =cut
 
-$Goose::VERSION = '0.009';
+$Goose::VERSION = '0.010';
 $Goose::Subs = {};
 $Goose::Imports = [];
 $Goose::Classes = [];
@@ -92,8 +92,6 @@ sub import {
                 if $_ eq ':Antlers';
             _setup_utils($pkg)
                 if $_ eq ':Utils';
-            _add_try($pkg)
-                if $_ eq ':Try';
             
         }
     }
@@ -108,7 +106,7 @@ sub import {
                 clone
                 exports
                 have
-                drop_sub
+                withdraw
                 sub_run
             /,
         );
@@ -128,7 +126,7 @@ sub import {
                 exports
                 have
                 around
-                drop_sub
+                withdraw
                 sub_run
             /,
         );
@@ -144,14 +142,7 @@ sub import {
     }
 }
 
-sub _add_try {
-    my $pkg = shift;
-    use Try::Tiny;
-    *{"$pkg\::try"} = \&{"Try::Tiny::try"};
-    *{"$pkg\::catch"} = \&{"Try::Tiny::catch"};
-}
-
-sub drop_sub {
+sub withdraw {
     my ($class, $sub);
     if (@_ < 2) {
         $sub = shift;
@@ -200,7 +191,10 @@ sub _extend_class {
 sub _setup_utils {
     my $class = shift;
     extends 'Goose::Utils';
-    _import_def ($class, 'Goose::Utils', qw/ref_has is_number count/);
+    use Try::Tiny;
+    *{"$class\::try"} = \&{"Try::Tiny::try"};
+    *{"$class\::catch"} = \&{"Try::Tiny::catch"};
+    _import_def ($class, 'Goose::Utils', qw/ref_has is_number count speak/);
 }
 
 sub _setup_moosed {
@@ -656,9 +650,9 @@ To use these utilities just import C<:Utils>.
     is_number("  1.0 "); # Float
     is_number('a'); # 0 
 
-You can use L<Try::Tiny> within Goose for try/catching. Just import C<:Try> and you've got access to C<try> and C<catch>.
+Utils now offers the ability to include the L<Try::Tiny> module for try/catch. 
 
-    use Goose ':Try';
+    use Goose ':Utils';
     
     try {
         die "Oh gnoes";
@@ -667,7 +661,19 @@ You can use L<Try::Tiny> within Goose for try/catching. Just import C<:Try> and 
         say "Last error: $_";
     };
 
+As of 0.010, C<speak> is available. It's a mix between C<say> and C<warn>. It will display the package name, line and filename from where C<speak> is being called. You can redirect the 
+output to any output (STDERR, STDOUT, etc). By default it will use STDOUT.
+
+    package MyApp;
+   
+    use Goose ':Utils'; 
+    speak "Hello, World!"; # prints (MyApp/test.pl[ln:4]) Hello, World!
+
+    # or to throw it to stderr
+    speak "Something went wrong" => STDERR; # you can catch it with 'perl test.pl 2>stderr.txt'
+
 Now with importing we can turn a perfectly normal package into a class, sort of. It saves you from creating C<sub new { ... }>
+B<Important> :Class has been replaced by :Antlers, but :Class will continue to work for anyone who uses it.
 
     # MyApp.pm
     package MyApp;
@@ -715,7 +721,7 @@ Overriding a subroutine inherits everything the old one had, including C<$self> 
         # do stuff
     });
 
-=head2 drop_sub
+=head2 withdraw
 
 Deletes an entire subroutine from the current package, or a remote one. Please be aware this is non-reversable. There is no recycle bin for subroutines unfortunately. Not yet, anyway.
 
@@ -725,12 +731,12 @@ Deletes an entire subroutine from the current package, or a remote one. Please b
     
     __PACKAGE__->test; # prints Huzzah!
     
-    drop_sub 'test'
+    withdraw 'test'
 
     __PACKAGE__->test; # fails, because there's no subroutine named 'test'
 
     use AnotherPackage;
-    AnotherPackage->drop_sub('test'); # removes the 'test' method from 'AnotherPackage'
+    AnotherPackage->withdraw('test'); # removes the 'test' method from 'AnotherPackage'
 
 =head2 restore
 

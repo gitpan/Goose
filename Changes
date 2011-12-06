@@ -1,5 +1,11 @@
 Revision history for Goose
 
+0.010   06/Dec/2011
+        To limit the number of import attributes I've moved :Try into :Utils. So if you want to use Try::Tiny, use import :Utils, which also includes some 
+            other handy stuff. Check out the documentation if you'd like more information.
+        Honestly, I hate having underscores in my method names. drop_sub has been replaced by 'withdraw'. I figured simply 'drop' might be severe namespace polution in some instances.
+        Added 'speak' method to Goose/Utils. I really need to add some documentation in this module..
+
 0.009   06/Dec/2011
         Testing is fixed. Huzzah! Added Try::Tiny to Makefile.PL as Goose can now import 'try' and 'catch' with the import attribute ':Try'.
 

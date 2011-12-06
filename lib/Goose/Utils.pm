@@ -76,4 +76,12 @@ sub count {
     }
 }
 
+sub speak {
+    my ($txt, $to) = @_;
+    $to = *STDOUT
+        if ! $to;
+    my ($pkg, $filename, $line) = caller;
+    print $to "($pkg/$filename\[ln:$line]) $txt\n";
+}
+
 1;
