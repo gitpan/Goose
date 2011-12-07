@@ -1,5 +1,8 @@
 Revision history for Goose
 
+0.011   07/Dec/2011
+        Adding Antlers to a class, then calling $Class->new(name => 'World') for example will create a read-writable accessor called 'name' with a default value of 'World'
+
 0.010   06/Dec/2011
         To limit the number of import attributes I've moved :Try into :Utils. So if you want to use Try::Tiny, use import :Utils, which also includes some 
             other handy stuff. Check out the documentation if you'd like more information.

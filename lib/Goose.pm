@@ -62,7 +62,7 @@ Changing a class method, by example
 
 =cut
 
-$Goose::VERSION = '0.010';
+$Goose::VERSION = '0.011';
 $Goose::Subs = {};
 $Goose::Imports = [];
 $Goose::Classes = [];
@@ -200,7 +200,15 @@ sub _setup_utils {
 sub _setup_moosed {
     my $class = shift;
 
-    *{ "$class\::new" } = sub { return bless { }, $class };
+    *{ "$class\::new" } = sub {
+        my ($self, %args) = @_;
+        if (%args) {    
+            foreach my $arg (keys %args) {
+                __PACKAGE__->_remote_has($class, $arg, $args{$arg});
+            }
+        }
+        return bless { }, $class
+     };
     _import_def ($class, undef, qw/extends accessor has chainable/);
 }
 
@@ -540,7 +548,19 @@ sub has {
         };
     }
 }
-        
+
+sub _remote_has {
+    my ($class, $pkg, $name, $default) = @_;
+    *{$pkg . "::$name"} = sub {
+        my ($class, $val) = @_;
+        if ($val) {
+            *{$pkg . "::$name"} = sub { return $val; }; return $val;
+        }
+        else {
+            return $default||0;
+        }
+    };
+}        
 
 sub accessor {
     my ($name, $value) = @_;
