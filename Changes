@@ -1,5 +1,10 @@
 Revision history for Goose
 
+0.012   13/Dec/2011
+        The new 'tag' method can, well, tag a subroutine with a message of your choosing. This is handy in debugging situations. If you use it on multiple subroutines then the sub name is ouputted in 
+            brackets at the end of the message string so you know which one is being called. Maybe a timestamp would be handy, too?
+        Modified pod very lightly.
+
 0.011   07/Dec/2011
         Adding Antlers to a class, then calling $Class->new(name => 'World') for example will create a read-writable accessor called 'name' with a default value of 'World'
 

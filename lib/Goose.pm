@@ -62,7 +62,7 @@ Changing a class method, by example
 
 =cut
 
-$Goose::VERSION = '0.011';
+$Goose::VERSION = '0.012';
 $Goose::Subs = {};
 $Goose::Imports = [];
 $Goose::Classes = [];
@@ -128,6 +128,7 @@ sub import {
                 around
                 withdraw
                 sub_run
+                tag
             /,
         );
         if ($moosed) {
@@ -450,7 +451,7 @@ sub clone {
     }
 
     if ((! $from || ! $to )) {
-        warn "clone(): 'from' and 'to' needed to cast this spell";
+        warn "clone(): 'from' and 'to' needed to clone a subroutine";
         return ;
     }
 
@@ -572,6 +573,43 @@ sub accessor {
         else { return $value; }
     };
 }
+
+sub tag {
+    my ($pkg, $name, $message) = @_;
+
+    if (scalar @_ > 2) {
+        ($pkg, $name, $message) = @_;
+    }
+    else {
+        ($name, $message) = ($pkg, $name);
+        $pkg = getscope();
+    }
+
+    if (ref($name) eq 'ARRAY') {
+        for my $sub (@$name) {
+            
+            if (! $pkg->can($sub)) {
+                warn "Cannot tag a subroutine that doesn't exist";
+            }
+            else {
+                $pkg->before($sub => sub {
+                        print $message . " ($sub)\n";
+                    }
+                );
+            }
+        }
+    }
+    else {
+        if (! $pkg->can($name)) {
+            warn "Cannot tag a subroutine that doesn't exist";
+        }
+        else {
+            $pkg->before($name => sub {
+                print $message . "\n";
+            });
+        }
+    }
+}    
 
 sub chainable {
     my ($method, %args) = @_;
@@ -879,7 +917,7 @@ the current class.
     extends 'Foo';
 
     override 'baz' => sub { say "Hello!" };
-    Magic->baz;
+    Foo->baz;
 
     1;
 
@@ -1043,7 +1081,7 @@ Create a more advanced accessor similar to Moose (but not as cool). It currently
 
     package Foo;
 
-    use Goose qw/:Antlers/;
+    use Goose ':Antlers';
 
     has name => ( is => 'rw' );
     has x => ( is => 'ro', default => 7 );
@@ -1079,6 +1117,40 @@ the arguments to pass to each subroutine.
 
     # Hello, World!
     # Bye, World. I'm going home
+
+=head2 tag
+
+Same sort of principle as C<sub_alert> but a little more flexible. You can "tag" a subroutine, or multiple subroutines using an arrayref and give them a custom message when ran.
+If you group multiple subs they will have the same message.
+Great for debugging.
+
+    use Goose;
+    
+    tag 'test' => 'Test was run!'
+
+    sub test { print "World"; }
+    test; # outputs 'Test was run!' then 'World'
+
+You can call it from a remote package, too.
+
+    # Foo.pm
+    package Foo;
+    
+    use Goose;
+    
+    sub hello { print "hi"; }
+    sub bye   { print "goodbye"; }
+
+    # goose.pl
+    
+    use Foo;
+
+    Foo->tag( [qw(hello goodbye)], 'Tagged subroutines called' );
+
+    Foo->hello;
+    Foo->goodbye;
+
+If you tag multiple subroutines, to avoid confusion Goose will output the name of the subroutine in brackets at the end of the message.
 
 =head1 AUTHOR
 
