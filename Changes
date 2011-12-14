@@ -1,5 +1,9 @@
 Revision history for Goose
 
+0.013   14/Dec/2011
+        :Antlers is now enabled by default. It wasn't hurting anything and it didn't slow processing down any, so why not? You can turn it off with the attribute :HideAntlers
+        constructor and destructor methods added. They look nicer than import and DESTROY.
+
 0.012   13/Dec/2011
         The new 'tag' method can, well, tag a subroutine with a message of your choosing. This is handy in debugging situations. If you use it on multiple subroutines then the sub name is ouputted in 
             brackets at the end of the message string so you know which one is being called. Maybe a timestamp would be handy, too?

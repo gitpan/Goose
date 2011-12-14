@@ -34,7 +34,7 @@ Changing a class method, by example
 
     # Foo.pm
 
-    use Goose qw/:Class/;
+    use Goose;
 
     sub hello {
         my $self = shift;
@@ -62,7 +62,7 @@ Changing a class method, by example
 
 =cut
 
-$Goose::VERSION = '0.012';
+$Goose::VERSION = '0.013';
 $Goose::Subs = {};
 $Goose::Imports = [];
 $Goose::Classes = [];
@@ -72,8 +72,9 @@ sub import {
     my ($class, @args) = @_;
     my $pkg = caller;
     
-    my $moosed;
+    my $moosed = 1;
     my $wantmoose;
+    _setup_moosed($pkg);
     if (@args > 0) {
         for (@args) {
             feature::feature->import( ':5.10' )
@@ -82,14 +83,9 @@ sub import {
             _debug_on()
                 if $_ eq ':Debug';
             
-            _setup_moosed($pkg)
-                if $_ eq ':Class' or $_ eq ':Antlers';
-            
             $wantmoose = 1
                 if $_ eq ':UseMoose';
 
-            $moosed = 1
-                if $_ eq ':Antlers';
             _setup_utils($pkg)
                 if $_ eq ':Utils';
             
@@ -129,6 +125,8 @@ sub import {
                 withdraw
                 sub_run
                 tag
+                constructor
+                destructor
             /,
         );
         if ($moosed) {
@@ -262,6 +260,18 @@ sub _add_to_subs {
         $Goose::Subs->{$sub} = \&{$sub};
         _debug("$sub does not exist. Adding to Subs list\n");
     }
+}
+
+sub constructor {
+    my $sub = shift;
+    my $pkg = getscope();
+    *{"$pkg\::import"} = $sub;
+}
+
+sub destructor {
+    my $sub = shift;
+    my $pkg = getscope();
+    *{"$pkg\::DESTROY"} = $sub;
 }
 
 sub restore {
@@ -730,33 +740,6 @@ output to any output (STDERR, STDOUT, etc). By default it will use STDOUT.
     # or to throw it to stderr
     speak "Something went wrong" => STDERR; # you can catch it with 'perl test.pl 2>stderr.txt'
 
-Now with importing we can turn a perfectly normal package into a class, sort of. It saves you from creating C<sub new { ... }>
-B<Important> :Class has been replaced by :Antlers, but :Class will continue to work for anyone who uses it.
-
-    # MyApp.pm
-    package MyApp;
-
-    use Goose qw/:Class/;
-
-    1;
-
-    # test.pl
-    my $foo = MyApp->new;
-
-    MyApp->create( name => sub {
-        my ($self, $name) = @_;
-
-        $self->{name} = $name;
-        say "Set name to $name";
-    });
-
-    MyApp->create( getName => sub { return shift->{name}; });
-
-    $foo->name('World');
-
-    say $foo->getName;
-
-Above we created a basically blank package, passed :Class to the Goose import method, then controlled the entire class from C<test.pl>.
 As of 0.007, C<:Class> now offers B<extending> using C<extends> which inherits a specified class, similar to C<use base>
 
 =head1 METHODS 
@@ -1149,6 +1132,24 @@ You can call it from a remote package, too.
 
     Foo->hello;
     Foo->goodbye;
+
+=head2 constructor
+
+Basically just C<sub import>. I wanted to keep the initialisation of a module and the destruction of it same-ish.
+
+    constructor sub {
+        my ($class, $args) = @_;
+        print "$class has loaded\n";
+    };
+    
+=head2 destructor
+
+Same as constructor, but is run when the module has finished.
+
+    destructor sub {
+        my $self = shift;
+        print "Module finished: $self->{some_var}\n";
+    };
 
 If you tag multiple subroutines, to avoid confusion Goose will output the name of the subroutine in brackets at the end of the message.
 
