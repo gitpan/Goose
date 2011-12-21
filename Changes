@@ -1,5 +1,9 @@
 Revision history for Goose
 
+0.014   21/Dec/2011
+        Added Goose::Role. Currently it's very minimal, but it works. A Goose::Role can "offer" a subroutine to any classes using it (thanks to Goose's new 'with' method).
+        I'll try to add some more info in the documentation.
+
 0.013   14/Dec/2011
         :Antlers is now enabled by default. It wasn't hurting anything and it didn't slow processing down any, so why not? You can turn it off with the attribute :HideAntlers
         constructor and destructor methods added. They look nicer than import and DESTROY.

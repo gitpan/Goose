@@ -62,7 +62,7 @@ Changing a class method, by example
 
 =cut
 
-$Goose::VERSION = '0.013';
+$Goose::VERSION = '0.014';
 $Goose::Subs = {};
 $Goose::Imports = [];
 $Goose::Classes = [];
@@ -127,6 +127,7 @@ sub import {
                 tag
                 constructor
                 destructor
+                with
             /,
         );
         if ($moosed) {
@@ -657,6 +658,19 @@ sub sub_run {
     }
 }
 
+sub with {
+    my $class = shift;
+    extends "$class";
+    if (! $class->can('list_roles')) {
+        warn "$class does not seem to be a valid Goose::Role";
+        return 0;
+    }
+    my $roles = $class->list_roles();
+    for my $s (@{$roles}) {
+        *{"$pkg\::$s"} = \*{"$class\::$s"};
+    }     
+}
+
 sub _debug_on {
     $Goose::Debug = 1;
     _debug("Goose debugging ON");
@@ -1133,6 +1147,8 @@ You can call it from a remote package, too.
     Foo->hello;
     Foo->goodbye;
 
+If you tag multiple subroutines, to avoid confusion Goose will output the name of the subroutine in brackets at the end of the message.
+
 =head2 constructor
 
 Basically just C<sub import>. I wanted to keep the initialisation of a module and the destruction of it same-ish.
@@ -1151,7 +1167,30 @@ Same as constructor, but is run when the module has finished.
         print "Module finished: $self->{some_var}\n";
     };
 
-If you tag multiple subroutines, to avoid confusion Goose will output the name of the subroutine in brackets at the end of the message.
+
+=head2 with
+
+Used in conjuction with C<Goose::Role> classes. When you C<with> a Goose::Role class, any subroutines the class offers will be available in the current package. An example might help..
+
+    # RolePlay.pm
+    package RolePlay;
+
+    use Goose::Role;
+    
+    offers 'name';
+
+    sub name { print "Hello, " . shift; }
+    sub test { }
+
+    # role.pl
+    
+    use Goose;
+    with 'RolePlay';
+    
+    test(); # failed, because RolePlay doesn't offer it
+    name('World'); # prints Hello, World
+
+Goose::Roles are restricted to that module only. ie: You cannot load Goose into a Goose::Role class. And C<with> will only work on valid Goose::Role classes.
 
 =head1 AUTHOR
 
