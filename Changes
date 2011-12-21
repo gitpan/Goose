@@ -1,5 +1,8 @@
 Revision history for Goose
 
+0.015   21/Dec/2011
+        Pretty nasty big in Goose where the "with" method doesn't get the correct package name.. yeah, like I said. Bad. This is the fix for it.
+
 0.014   21/Dec/2011
         Added Goose::Role. Currently it's very minimal, but it works. A Goose::Role can "offer" a subroutine to any classes using it (thanks to Goose's new 'with' method).
         I'll try to add some more info in the documentation.

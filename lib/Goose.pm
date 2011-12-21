@@ -62,7 +62,7 @@ Changing a class method, by example
 
 =cut
 
-$Goose::VERSION = '0.014';
+$Goose::VERSION = '0.015';
 $Goose::Subs = {};
 $Goose::Imports = [];
 $Goose::Classes = [];
@@ -665,6 +665,7 @@ sub with {
         warn "$class does not seem to be a valid Goose::Role";
         return 0;
     }
+    my $pkg = caller(0);
     my $roles = $class->list_roles();
     for my $s (@{$roles}) {
         *{"$pkg\::$s"} = \*{"$class\::$s"};
