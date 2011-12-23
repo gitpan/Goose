@@ -62,7 +62,7 @@ Changing a class method, by example
 
 =cut
 
-$Goose::VERSION = '0.015';
+our $VERSION = '0.016';
 $Goose::Subs = {};
 $Goose::Imports = [];
 $Goose::Classes = [];
@@ -86,9 +86,6 @@ sub import {
             $wantmoose = 1
                 if $_ eq ':UseMoose';
 
-            _setup_utils($pkg)
-                if $_ eq ':Utils';
-            
         }
     }
 
@@ -186,15 +183,6 @@ sub _extend_class {
         no strict 'refs';
         @{"${class}::ISA"} = @$mothers;
     }
-}
-
-sub _setup_utils {
-    my $class = shift;
-    extends 'Goose::Utils';
-    use Try::Tiny;
-    *{"$class\::try"} = \&{"Try::Tiny::try"};
-    *{"$class\::catch"} = \&{"Try::Tiny::catch"};
-    _import_def ($class, 'Goose::Utils', qw/ref_has is_number count speak/);
 }
 
 sub _setup_moosed {
@@ -710,9 +698,9 @@ or create hook modifiers then this will enable it for you. It can get verbose, s
 
 The newest addition to Goose is C<Goose::Utils>. It contains features that make doing simple things in Perl, more simple. Like counting the number of elements in a HashRef or ArrayRef, 
 returning the type of a number or if it is even a number, and searching a reference for a particular key (Works for arrayref and hashref).
-To use these utilities just import C<:Utils>.
+To use these utilities just import C<use Goose::Utils>.
 
-    use Goose ':Utils';
+    use Goose::Utils;
     
     my $h = {
         name => 'foo',

@@ -12,6 +12,7 @@ constructor sub {
     }
     exports 'list_roles' => ( into => $pkg );
     exports 'offers'     => ( into => $pkg );
+    exports 'requires'   => ( into => $pkg );
     _add_new_role( $pkg );
 };
 
@@ -30,6 +31,18 @@ sub _add_new_role {
 }
 
 sub offers {
+    my $pkg = caller(0);
+    my @offers = @_;
+    for my $s (@offers) {
+        if (! $pkg->can($s)) {
+            warn "Can't offer a subroutine that does not exist ($s)";
+            next;
+        }
+        push @{$Goose::Role::Roles->{$pkg}->{offers}}, $s;
+    }
+}
+
+sub requires {
     my $pkg = caller(0);
     my @offers = @_;
     for my $s (@offers) {

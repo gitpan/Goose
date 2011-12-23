@@ -1,5 +1,9 @@
 Revision history for Goose
 
+0.016   23/Dec/2011
+        Added 'requires' to Goose::Role, which is just a clone of 'offers'. Mainly for compatibility with the 1,000 choices of OOP systems out there.
+        Removed :Utils attribute and moved Goose::Utils to its own module.
+
 0.015   21/Dec/2011
         Pretty nasty big in Goose where the "with" method doesn't get the correct package name.. yeah, like I said. Bad. This is the fix for it.
 
