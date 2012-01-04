@@ -21,3 +21,4 @@ README
 t/00-load.t
 t/01-hooks.t
 t/02-accessors.t
+t/03-sub_run.t

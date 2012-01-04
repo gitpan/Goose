@@ -1,5 +1,10 @@
 Revision history for Goose
 
+0.017   04/01/2012
+        Happy New Year everyone. Minor change to Goose in attempt to clean it up a little and make it as independent as possible, I have removed the Try::Tiny dependency. Goose now needs no dependencies.
+        Some pod changes were made, too.
+        Goose now loads warnings and strict for you when you 'use Goose'.
+
 0.016   23/Dec/2011
         Added 'requires' to Goose::Role, which is just a clone of 'offers'. Mainly for compatibility with the 1,000 choices of OOP systems out there.
         Removed :Utils attribute and moved Goose::Utils to its own module.

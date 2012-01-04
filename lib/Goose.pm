@@ -9,8 +9,9 @@ Goose - Multi-Use utility for manipulating subroutines, classes and more.
 What this module attempts to do is make a developers life easier by allowing them to manage and manipulate subroutines and modules. You can override a subroutine, then 
 restore it as it was originally, create after, before and around hook modifiers, delete subroutines, or even tag every subroutine in a class to let you know when each one 
 is being run, which is great for debugging.
-On top of all this Goose offers some minor OOP framework utilities like C<extends>, C<exports>, C<accessor>, C<has> and C<chainable>. Of course if you need more I would advise L<Moose> or L<Mouse>.
-Newer versions of Goose include C<Goose::Utils> which offers some basic, yet extremely handy functions for common situations, and access to L<Try::Tiny> just by a small import attribute, C<:Try>.
+On top of all this Goose offers some minor OOP framework utilities like C<extends>, C<exports>, C<accessor>, C<has> and C<chainable>. Of course if you need more I would advise L<Moose> or L<Mouse>. But the 
+great thing about Goose is it boasts speed, and it's just simple.
+Newer versions of Goose include C<Goose::Utils> which offers some basic, yet extremely handy functions for common situations.
 
 =head1 SYNOPSIS
 
@@ -62,7 +63,7 @@ Changing a class method, by example
 
 =cut
 
-our $VERSION = '0.016';
+our $VERSION = '0.017';
 $Goose::Subs = {};
 $Goose::Imports = [];
 $Goose::Classes = [];
@@ -71,7 +72,9 @@ $Goose::Debug = 0;
 sub import {
     my ($class, @args) = @_;
     my $pkg = caller;
-    
+
+    warnings->import();
+    strict->import();    
     my $moosed = 1;
     my $wantmoose;
     _setup_moosed($pkg);
@@ -721,17 +724,6 @@ To use these utilities just import C<use Goose::Utils>.
     is_number("  1.0 "); # Float
     is_number('a'); # 0 
 
-Utils now offers the ability to include the L<Try::Tiny> module for try/catch. 
-
-    use Goose ':Utils';
-    
-    try {
-        die "Oh gnoes";
-    }
-    catch {
-        say "Last error: $_";
-    };
-
 As of 0.010, C<speak> is available. It's a mix between C<say> and C<warn>. It will display the package name, line and filename from where C<speak> is being called. You can redirect the 
 output to any output (STDERR, STDOUT, etc). By default it will use STDOUT.
 
@@ -852,8 +844,7 @@ Around gives the user a bit more control over the subroutine. When you create an
 
 =head2 create
 
-"Conjurs" a subroutine into the current script or a class. By create I just mean create. It will not allow you to override a subroutine 
-using create.
+Creates a new subroutine into the current script or a class. It will not allow you to override a subroutine.
 
     create 'test' => sub { print "In test\n"; }
     test;

@@ -20,8 +20,6 @@ no_index:
   directory:
     - inc
     - t
-requires:
-  Try::Tiny: 0
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.016
+version: 0.017

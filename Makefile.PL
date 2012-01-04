@@ -6,7 +6,6 @@ author   q{Brad Haywood <brad@geeksware.net>};
 license  'perl';
 
 build_requires 'Test::More';
-requires 'Try::Tiny';
 
 auto_install;
 

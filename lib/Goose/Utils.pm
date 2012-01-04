@@ -1,7 +1,6 @@
 package Goose::Utils;
 
 use Goose;
-use Try::Tiny;
 
 $Goose::Utils::VERSION = '0.002';
 
@@ -10,8 +9,6 @@ my $CLASS = __PACKAGE__;
 constructor sub {
     my ($self, $args) = @_;
     my $class = caller(0);
-    *{"$class\::try"} = \&{"Try::Tiny::try"};
-    *{"$class\::catch"} = \&{"Try::Tiny::catch"};
     exports 'ref_has'   => ( into => $class );
     exports 'count'     => ( into => $class );
     exports 'is_number' => ( into => $class );
