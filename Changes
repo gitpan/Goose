@@ -1,5 +1,9 @@
 Revision history for Goose
 
+0.018   24/01/2012
+        Silly ambiguous error on Perl < 5.14. Hopefully this should be rectified.
+        Added 'sublist' method. Fetches subroutines in the current package (Excluding the Goose ones) and returns an array.
+
 0.017   04/01/2012
         Happy New Year everyone. Minor change to Goose in attempt to clean it up a little and make it as independent as possible, I have removed the Try::Tiny dependency. Goose now needs no dependencies.
         Some pod changes were made, too.

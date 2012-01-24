@@ -63,7 +63,7 @@ Changing a class method, by example
 
 =cut
 
-our $VERSION = '0.017';
+our $VERSION = '0.018';
 $Goose::Subs = {};
 $Goose::Imports = [];
 $Goose::Classes = [];
@@ -128,6 +128,7 @@ sub import {
                 constructor
                 destructor
                 with
+                sublist
             /,
         );
         if ($moosed) {
@@ -669,7 +670,8 @@ sub _debug_on {
 }
 
 sub _debug {
-    print '[debug] ' . shift . "\n"
+    my $msg = shift;
+    print "[debug] $msg\n"
         if $Goose::Debug == 1;
 }
 
@@ -681,6 +683,18 @@ sub _class_exists {
     # every class should at _least_ have BEGIN, so count the keys!
     $class = "$class\::";
     return scalar(keys(%{$class}));
+}
+
+sub sublist {
+    my $pkg = caller(0);
+    my @subs;
+    for (keys %{$pkg . "::"}) {
+        my $sub = $_;
+        push @subs, $sub
+            unless substr($sub, -2) eq '::' or grep { $_ eq $sub } @{$Goose::Imports};
+    }
+
+    return @subs;
 }
 
 =head1 IMPORT ATTRIBUTES
@@ -1171,6 +1185,18 @@ Used in conjuction with C<Goose::Role> classes. When you C<with> a Goose::Role c
     name('World'); # prints Hello, World
 
 Goose::Roles are restricted to that module only. ie: You cannot load Goose into a Goose::Role class. And C<with> will only work on valid Goose::Role classes.
+
+=head2 sublist
+
+Fetches an array of available subroutines in the current package.
+
+    foreach my $sub (sublist) {
+        print "Running $sub\n";
+        eval $sub;
+    }
+
+    my @subs = sublist;
+    print "Found " . scalar(@subs) . " subroutines\n";
 
 =head1 AUTHOR
 
